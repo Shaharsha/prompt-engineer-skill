@@ -87,6 +87,7 @@ Tool descriptions are **the single most impactful quality factor** for tool-use 
 - Design tool responses carefully — see Tool Response Design below.
 - All three providers support **parallel tool calling** — design tools to be independently callable.
 - **Iterate via evaluation**: small description improvements yield dramatic gains. Create realistic multi-tool test cases, run programmatically, analyze transcripts. When a tool is misused, fix the description first — it's the highest-leverage fix.
+- **Think tool**: for complex sequential tool use (policy-heavy, multi-step decisions), add a zero-implementation "think" tool that gives the model a scratchpad to reason between tool calls. 54% improvement measured in complex domains. Costs nothing to implement — just a tool with a string input that returns nothing.
 
 ### Provider-Specific Tool Guidance
 
@@ -119,6 +120,7 @@ Tool responses are context — bloated responses waste tokens and degrade reason
 - **Truncate long text** with a structural outline — return the first N lines plus an outline (headers, sections) so the model can request specific parts.
 - **Explicit absence** — state what is NOT included: `"Does NOT include financial data — use get_project_details."` This prevents hallucinated fields.
 - **Actionable errors** — return specific, actionable error messages, not opaque codes. `"No results for 'XYZ'. Try broader terms or check spelling."` beats `"Error 404"`.
+- **Response format parameter** — expose a `format` parameter (`"detailed"` vs `"concise"`) letting agents choose output verbosity. A concise response can be 3x fewer tokens than detailed, saving context for reasoning.
 
 ## C. Provider Differences
 
@@ -155,13 +157,21 @@ Tool responses are context — bloated responses waste tokens and degrade reason
 
 | Aspect | Claude | GPT | Gemini |
 |--------|--------|-----|--------|
-| Mechanism | Developer-controlled cache breakpoints | Automatic prefix-based (≥1024 tokens) | Automatic context caching |
-| Optimization | Place cacheable content at explicit breakpoints | Static content first, dynamic content last (exact prefix match required) | Automatic — no special layout needed |
+| Mechanism | Developer-controlled cache breakpoints (`cache_control`) | Automatic prefix-based (≥1024 tokens, 128-token granularity) | Implicit (automatic) + explicit (`CachedContent` objects) |
+| Cost savings | Cache reads at 10% of input cost (90% savings) | Cache reads ~80% cheaper than standard input | Model-dependent; explicit caching reduces per-request cost |
+| Minimum tokens | 1,024-4,096 depending on model | 1,024 tokens | Varies by model |
+| TTL | 5 min (default) or 1 hour; reads reset TTL | ~5-10 min automatic; 24h with extended caching | 1 hour default; configurable per CachedContent |
+
+**Cache-aware prompt design** (applies to all providers, saves 80-90% on input costs):
+- **Structure static → dynamic**: place system prompt, tool definitions, and examples first (stable prefix). Put user input and conversation history last. The prefix must be byte-identical across requests.
+- **Never reorder**: changing tool order, image order, or message order between requests breaks the cache on all providers. Append new messages — never modify earlier ones.
+- **Multi-turn**: append assistant response + new user message at the end. The stable prefix (system + tools + earlier messages) hits cache automatically.
+- **Monitor**: check `cache_read_input_tokens` (Claude), `cached_tokens` (GPT), or cache metadata (Gemini) in responses to verify hits.
 
 ### Unique Features
 - **Claude:** Prefill removed in 4.6. Adaptive thinking is default — no config needed. Context-aware (can track remaining context window). Parallel tool calling ~100% success with explicit instruction. Use `effort` param (not `budget_tokens`) for thinking control. Tool search available for deferring large tool sets.
 - **GPT:** `developer` role prioritized over `user` — security-sensitive instructions go in developer message. `strict: true` guarantees 100% JSON schema adherence. Independent `text.verbosity` param (low/medium/high) controls output length separately from reasoning depth. `previous_response_id` preserves reasoning across turns (73.9% → 78.2% on benchmarks). Contradictions in prompts are more damaging in GPT-5 — it spends tokens reconciling conflicts instead of ignoring them.
-- **Gemini:** Native Google Search grounding (exclusive). Media resolution control for multimodal (image/video/PDF token budgets). Cannot combine built-in tools with custom function calling simultaneously. Few-shot examples are critical — "prompts without few-shot examples are likely to be less effective." Default verbosity is terse — request elaboration explicitly. Add temporal grounding ("Remember it is {YEAR} this year") for time-sensitive tasks. Completion priming (start the response, let model continue) is more reliable than describing format preferences.
+- **Gemini:** Native Google Search grounding (exclusive). Media resolution control for multimodal (image/video/PDF token budgets). Cannot combine built-in tools with custom function calling simultaneously. Few-shot examples are critical — "prompts without few-shot examples are likely to be less effective." Default verbosity is terse — request elaboration explicitly. Add temporal grounding ("Remember it is {YEAR} this year") for time-sensitive tasks. Completion priming (start the response, let model continue) is more reliable than describing format preferences. Thought signatures (`thoughtSignatures`) preserve reasoning chains across multi-turn calls — capture and return them to maintain coherence.
 
 ## D. Budget Models
 
@@ -187,6 +197,8 @@ Budget models (Claude Haiku 4.5, GPT-5 Mini, Gemini 3 Flash / 3.1 Flash Lite) sh
 
 ### Practical Pattern
 Use budget models for fast/cheap phases (extraction, classification, routing) and full models for complex phases (analysis, recommendation, generation). This is the standard multi-tier agent pipeline.
+
+**Warning**: tools designed for weaker models can actively harm stronger ones. Detailed workarounds and hand-holding that help Haiku may cause Opus to overtrigger or over-act. When supporting multiple model tiers, test tool descriptions on each tier — or use model-conditional tool descriptions.
 
 ## E. Cross-Provider Compatibility
 
