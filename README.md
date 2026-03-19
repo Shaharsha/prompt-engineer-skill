@@ -28,9 +28,12 @@ The skill provides actionable, research-backed guidance for building AI agents:
 
 ### Via Claude Code Plugin Marketplace
 
-```
-/plugin marketplace add Shaharsha/prompt-engineer-skill
-/plugin install prompt-engineer@prompt-engineer-marketplace
+```bash
+# Add the marketplace (one-time)
+claude plugin marketplace add Shaharsha/prompt-engineer-skill
+
+# Install the skill
+claude plugin install prompt-engineer@prompt-engineer-marketplace
 ```
 
 ### Manual Install (Personal)
