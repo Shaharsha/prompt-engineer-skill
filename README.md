@@ -69,7 +69,7 @@ You can also invoke it directly:
 
 ```
 skills/prompt-engineer/
-  SKILL.md                              # Main skill (321 lines)
+  SKILL.md                              # Main skill (~330 lines)
   templates/
     system-prompt-template.md           # Contract-style system prompt structure
     tool-description-template.md        # Structured tool description format

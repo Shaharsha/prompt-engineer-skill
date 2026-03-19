@@ -18,6 +18,8 @@ When editing an existing prompt, follow this order:
 
 For new prompts: start minimal (role + constraints + examples + output format), test, then add instructions only when you observe failure modes.
 
+Before submitting any prompt edit: check for contradictions (if two rules conflict, the model picks arbitrarily — remove one), and verify clarity (could a colleague with no context follow this prompt unambiguously?).
+
 ## A. Universal Best Practices
 
 These apply to all three providers and cover ~70% of prompt engineering work.
@@ -43,8 +45,7 @@ These apply to all three providers and cover ~70% of prompt engineering work.
 ### Context Engineering
 - Context window is working memory. Every token competes for attention — more is not always better. Find the smallest set of high-signal tokens that maximize the likelihood of your desired outcome.
 - **Put long documents at the top**, queries and instructions at the bottom. This ordering improves response quality by up to 30% on complex multi-document inputs.
-- **Prefer progressive discovery** — let agents find context through tools rather than front-loading everything. Combine upfront retrieval (fast, known-relevant) with autonomous exploration (discovers unknowns).
-- Maintain lightweight identifiers (paths, names, links) and load full content dynamically via tools.
+- **Prefer progressive discovery** — let agents find context through tools rather than front-loading everything. Maintain lightweight identifiers (paths, names, links) and load full content dynamically. Combine upfront retrieval (fast, known-relevant) with autonomous exploration (discovers unknowns).
 - **Use semantic names over technical IDs** — replace UUIDs, mime_types, internal codes with human-readable names (file names, descriptive labels). LLMs reason more accurately over natural language than opaque identifiers.
 - When context grows large, ask the model to **quote relevant sections first** before reasoning — this cuts through noise and grounds the response.
 - For multi-turn agents: **compact and summarize** conversation history at context limits, preserving key decisions and findings. Use a cheap model (Flash, Haiku) for summarization.
@@ -87,7 +88,6 @@ Tool descriptions are **the single most impactful quality factor** for tool-use 
 - Design tool responses carefully — see Tool Response Design below.
 - All three providers support **parallel tool calling** — design tools to be independently callable.
 - **Iterate via evaluation**: small description improvements yield dramatic gains. Create realistic multi-tool test cases, run programmatically, analyze transcripts. When a tool is misused, fix the description first — it's the highest-leverage fix.
-- **Think tool**: for complex sequential tool use (policy-heavy, multi-step decisions), add a zero-implementation "think" tool that gives the model a scratchpad to reason between tool calls. 54% improvement measured in complex domains. Costs nothing to implement — just a tool with a string input that returns nothing.
 
 ### Provider-Specific Tool Guidance
 
@@ -212,8 +212,6 @@ When writing prompts that must work across providers or when provider-switching 
 - Role/persona in the first sentence
 - Positive framing ("do X" not "don't do Y")
 - Explicit output format with concrete examples
-- Breaking complex tasks into sequential chained prompts (all providers benefit)
-- Context-first ordering (long documents at top, queries at bottom)
 
 ### Must Abstract Per Provider (in your agent framework, not in the prompt)
 - Thinking/reasoning configuration (API parameter, not prompt content)
@@ -228,11 +226,6 @@ Write the core prompt once using XML structure, then wrap provider-specific adju
 1. **Core prompt:** role + constraints + tools + examples + output format (XML tags)
 2. **Provider adapter:** instruction placement, language enforcement, anti-scope-creep guardrails
 3. **Model adapter:** thinking config, temperature, caching, max tokens
-
-### Non-English Considerations
-- **Claude:** Follows the language of the prompt naturally.
-- **GPT:** Generally follows with mild nudging — add one sentence requesting target language output.
-- **Gemini:** Requires aggressive enforcement — add "RESPOND IN {LANGUAGE}. YOU MUST RESPOND UNMISTAKABLY IN {LANGUAGE}." at the end of the system instruction.
 
 ## F. Examples
 
@@ -303,20 +296,7 @@ Recognize these urges and resist them:
 - **Prompt archaeology neglect** — instructions effective in GPT-4/Claude 3.5 may backfire in newer models. When upgrading models, audit prompts for obsolete aggressive encouragement — native capabilities make external prodding redundant.
 - **Assuming all providers behave the same** — They don't. Check Section C for differences in instruction placement, verbosity defaults, persona handling, and temperature.
 
-## H. Quality Checklist
-
-Before submitting any prompt edit:
-
-1. **Read the existing prompt fully** before making changes. Understand its intent.
-2. **Make minimal, targeted changes.** Preserve existing structure, tone, and formatting.
-3. **Never add** emojis, filler phrases, or unnecessary embellishments.
-4. **Check for contradictions** — if two rules conflict, the model picks arbitrarily. Remove one.
-5. **Verify clarity:** could a colleague with no context follow this prompt unambiguously?
-6. For cross-provider prompts: check instruction placement (top for Claude, top+bottom for GPT, constraints last for Gemini).
-7. **Re-read the full prompt** after editing to check nothing was broken.
-8. **Test the prompt** on the target provider before considering it done.
-
-## I. Testing Prompts
+## H. Testing Prompts
 
 Don't iterate blindly. Build simple evaluations:
 1. **Identify failures** — run the agent on representative tasks without changes. Note specific failures.
