@@ -90,9 +90,10 @@ This skill synthesizes guidance from official provider documentation and product
 - [Anthropic: Writing Tools for Agents](https://www.anthropic.com/engineering/writing-tools-for-agents)
 - [Anthropic: Effective Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
 - [Claude Prompting Best Practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
+- [Anthropic: Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)
+- [Anthropic: Advanced Tool Use](https://www.anthropic.com/engineering/advanced-tool-use)
 - [OpenAI: GPT-5 Prompting Guide](https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide)
 - [Google: Gemini Prompting Strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies)
-- [LangChain: Tools & Context Engineering](https://docs.langchain.com/oss/python/langchain/context-engineering)
 - [Claude Code system prompts](https://github.com/Piebald-AI/claude-code-system-prompts) -- tool description patterns, safety architecture, subagent design
 
 ## Compatibility
