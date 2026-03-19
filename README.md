@@ -1,5 +1,9 @@
 # prompt-engineer-skill
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Agent Skills](https://img.shields.io/badge/Agent_Skills-compatible-green.svg)](https://agentskills.io)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-skill-blueviolet.svg)](https://claude.com/claude-code)
+
 Expert prompt engineering skill for [Claude Code](https://claude.com/claude-code) and any agent supporting the [Agent Skills](https://agentskills.io) standard.
 
 Covers system prompts, tool descriptions, tool response design, context engineering, agentic system design, and cross-provider compatibility across **Claude**, **GPT**, and **Gemini** APIs.
@@ -26,6 +30,7 @@ The skill provides actionable, research-backed guidance for building AI agents:
 
 ```
 /plugin marketplace add Shaharsha/prompt-engineer-skill
+/plugin install prompt-engineer@prompt-engineer-marketplace
 ```
 
 ### Manual Install (Personal)
