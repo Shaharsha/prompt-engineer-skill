@@ -5,7 +5,7 @@ description: "Expert prompt engineering for building AI agents via Claude, GPT, 
 
 # Prompt Engineering for AI Agent APIs
 
-Guidelines for writing professional system prompts, tool descriptions, and agent instructions for developers building AI agents via the Claude, GPT, and Gemini APIs. Not for prompting chat UIs (ChatGPT, claude.ai, Gemini) or coding assistants (Claude Code, Cursor, Codex) — for building your own agents programmatically.
+Guidelines for writing system prompts, tool descriptions, and agent instructions for building AI agents via the Claude, GPT, and Gemini APIs.
 
 ## Process
 
