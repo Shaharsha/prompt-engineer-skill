@@ -1,17 +1,17 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "prompt-engineer-marketplace",
-  "description": "Expert prompt engineering skill for building AI agents via Claude, GPT, and Gemini APIs",
   "owner": {
-    "name": "Shahar Shavit",
-    "email": "shahar@shahar.sh"
+    "name": "Shahar Shavit"
   },
   "plugins": [
     {
       "name": "prompt-engineer",
       "description": "Expert prompt engineering for system prompts, tool descriptions, context engineering, and cross-provider compatibility across Claude, GPT, and Gemini APIs.",
       "version": "1.0.0",
-      "source": ".",
+      "author": {
+        "name": "Shahar Shavit"
+      },
+      "source": "./",
       "category": "development",
       "tags": ["prompt-engineering", "tool-descriptions", "agent-design", "context-engineering"],
       "homepage": "https://github.com/Shaharsha/prompt-engineer-skill",
