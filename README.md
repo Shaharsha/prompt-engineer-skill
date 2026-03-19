@@ -85,7 +85,7 @@ This skill synthesizes guidance from official provider documentation and product
 - [OpenAI: GPT-5 Prompting Guide](https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide)
 - [Google: Gemini Prompting Strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies)
 - [LangChain: Tools & Context Engineering](https://docs.langchain.com/oss/python/langchain/context-engineering)
-- Claude Code system prompts (v2.1.78) -- tool description patterns, safety architecture, subagent design
+- [Claude Code system prompts](https://github.com/Piebald-AI/claude-code-system-prompts) -- tool description patterns, safety architecture, subagent design
 
 ## Compatibility
 
